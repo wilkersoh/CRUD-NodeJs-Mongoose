@@ -1,7 +1,7 @@
 const express =  require("express");
 const router = express.Router();
 const mongoose = require("mongoose");
-// 连接 db node
+// 连接 db里的node
 const Employee = mongoose.model("node")
 
 router.get('/', (req, res) => {
@@ -11,6 +11,7 @@ router.get('/', (req, res) => {
 })
 
 router.post('/', (req, res) => {
+    // 检测._id 是 create还是 更新
     if(req.body._id == ''){
         insertRecord(req, res);
     } else {
@@ -23,23 +24,24 @@ function insertRecord(req, res){
     employee.fullName = req.body.fullName;
     employee.email = req.body.email;
     employee.mobile = req.body.mobile;
-    employee.city =req.body.city;
+    employee.city = req.body.city;
     employee.save((err, doc) => {
         if(!err){
             res.redirect('employee/list');
         } else {
-            if(err.name == 'ValidationError')
+            if(err.name == 'ValidationError'){
             handleValidationError(err, req.body);
-            res.render("employee/addOrEdit", {
-                viewTitle: "Insert Employee",
-                employee: req.body
-            });
+                res.render("employee/addOrEdit", {
+                    viewTitle: "Insert Employee",
+                    employee: req.body
+                });
+            }
         }
     })
 }
 
 function updateRecord(req, res){
-    Employee.findOneAndUpdate({_id: req.body._id}, req.body, { new: true}, (err, doc) => {
+    Employee.findOneAndUpdate({_id: req.body._id}, req.body, { new: true }, (err, doc) => {
         if(!err){
             res.redirect('employee/list');
         } else {
@@ -55,7 +57,7 @@ function updateRecord(req, res){
 }
 
 router.get("/list", (req, res) => {
-    // res.json("from list");
+
     Employee.find((err, docs) => {
         if(!err){
             res.render("employee/list",{
@@ -69,6 +71,7 @@ router.get("/list", (req, res) => {
 
 function handleValidationError(err, body) {
     for(field in err.errors){
+        // 有 form 有 error的话
         switch ( err.errors[field].path){
             case 'fullName':
             // message 是对database里 require的 信息
@@ -77,6 +80,9 @@ function handleValidationError(err, body) {
             case "email":
               body['emailError'] = err.errors[field].message;
                 break;
+            case "mobile":
+                body['mobileError'] = err.errors[field].message;
+                  break;
             default:
                 break;
         }
