@@ -11,7 +11,7 @@ const employeeSchema = new mongoose.Schema({
     },
     mobile: {
         type: String,
-        required: true
+        required: 'Provide your number.'
     },
     city: {
         type: String
