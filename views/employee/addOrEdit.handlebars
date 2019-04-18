@@ -20,6 +20,9 @@
         <div class="form-group col-md-6">
             <label>Mobile</label>
             <input type="text" class="form-control" name="mobile" value="{{employee.mobile}}" placeholder="Mobile">
+            <div class="text-danger">
+                {{employee.mobileError}}
+            </div>
         </div>
         <div class="form-group col-md-6">
             <label>City</label>
